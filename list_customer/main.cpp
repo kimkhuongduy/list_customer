@@ -4,7 +4,7 @@
 #include <string.h>
 //define for
 #define For(i, a, b) for(int i = a; i < b; i++)
-#define FOR(it, a, b) for(TY_CustomerList :: iterator it = a; it != b; it++)
+#define FOR(tmp, a, b) for(TY_CustomerList :: iterator tmp = a; tmp != b; tmp++)
 //define type of customer
 #define PERSIONAL_CUSTOMER	"CN"
 #define COMPANY_CUSTOMER	"CT"
@@ -29,7 +29,9 @@ void display_list_customer(TY_CustomerList vList);
 void sort_list_customer(TY_CustomerList *vList, int n);
 
 //Other supporting funtion
-void print_info_customer(TY_Customer *tmp);
+void print_info_customer(TY_CustomerList :: iterator tmp);
+double caculator(TY_CustomerList :: iterator tmp);
+double get_discount(char *type_customer);
 
 // input number of customer and check
 int input_number_customer(void){
@@ -111,6 +113,20 @@ void display_list_customer(TY_CustomerList *vList){
 	cout <<"--------------------------------------------------------------------------";
 	FOR(tmp, vList->begin(), vList->end())
 		print_info_customer(tmp);
+}
+void print_info_customer(TY_CustomerList :: iterator tmp){
+	cout << tmp -> mName << "\t" << tmp -> mCustype << "\t" << tmp -> mProduct << "\t" << tmp -> mQuantity << "\t" << tmp -> mPrice << "\t" << caculator(tmp);
+}
+double get_discount(char *type_customer){
+	double discount;
+	if(strcmp(type_customer, (const char*)PERSIONAL_CUSTOMER) == 0)
+		return discount = 0.8;
+	else if(strcmp(type_customer, (const char*)COMPANY_CUSTOMER) == 0)
+		return discount = 0.9;
+	else return discount = 1;
+}
+double caculator(TY_CustomerList :: iterator tmp){
+	return tmp -> mQuantity * tmp -> mPrice * get_discount(tmp -> mCustype);
 }
 int main(){
 
