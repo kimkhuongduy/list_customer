@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1588090689 source:e:\code\list_customer\main.cpp
+	<iostream>
+	<vector>
+	<limits>
+
