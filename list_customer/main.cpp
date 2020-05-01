@@ -2,6 +2,7 @@
 #include <vector>
 #include <limits>
 #include <string.h>
+#include <algorithm>
 //define for
 #define For(i, a, b) for(int i = a; i < b; i++)
 #define FOR(tmp, a, b) for(TY_CustomerList :: iterator tmp = a; tmp != b; tmp++)
@@ -13,8 +14,8 @@
 using namespace std;
 //declare structure infomation
 typedef struct customer{
-    char mName[100];
-    char mProduct[100];
+    string mName;
+    string mProduct;
     char mCustype[3];
     __int16 mQuantity;
     double mPrice;
@@ -26,23 +27,26 @@ TY_CustomerList vList;
 int input_number_customer(void);
 void input_info_customer(TY_CustomerList *vList, int n);
 void display_list_customer(TY_CustomerList vList);
-void sort_list_customer(TY_CustomerList *vList, int n);
+void sort_list_customer(TY_CustomerList *vList);
 
 //Other supporting funtion
 void print_info_customer(TY_CustomerList :: iterator tmp);
 double caculator(TY_CustomerList :: iterator tmp);
 double get_discount(char *type_customer);
-
+void menu(void);
+void delete_cache(){
+	cin.clear();
+	cin.ignore(numeric_limits<streamsize> :: max(), '\n');
+}
 // input number of customer and check
 int input_number_customer(void){
-	cout << "Please input number of customer(>1): " ;
+	cout << "\n\tPlease input number of customer(>1): " ;
 	int n;
 	cin >> n;
 		// check
 		while(!cin || n < 0){
 			cout << endl << "ERROR. Please input positive numeric data.";
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			delete_cache();
 			cin >> n;
 		}
 	return n;
@@ -59,63 +63,64 @@ void input_info_customer(TY_CustomerList *vList, int n){
 
 	TY_Customer tmp;
 	For(i, 0, n){
-		cout << "Please input info of customer #" << i+1;
+		cout << "\n\tPlease input info of customer #" << i+1;
 
 		// name of customer
-		cout << "\nInput the name of customer: ";
-		cin >> tmp.mName;
-		cout << "Customer name = " << tmp.mName << endl;
+		cout << "\n\t\tInput the name of customer: ";
+		delete_cache();
+		getline(cin, tmp.mName);
+		cout << "\t\tCustomer name = " << tmp.mName << endl;
 
 		// type of customer
 		do{
-			cout << "\nInput the type of customer(CN/CT/NN): ";
+			cout << "\n\t\tInput the type of customer(CN/CT/NN): ";
+			//delete_cache();
 			cin >> tmp.mCustype;
 		}while(strcmp(tmp.mCustype, "CN") != 0 && strcmp(tmp.mCustype, "CT") != 0 && strcmp(tmp.mCustype, "NN") != 0);
-		cout << "Customer type: " << tmp.mCustype << endl;
+		cout << "\t\tCustomer type: " << tmp.mCustype << endl;
 
 		// name of product
-		cout << "\nInput the product name: ";
-		cin >> tmp.mProduct;
-		cout << "Product name: " << tmp.mProduct << endl;
+		cout << "\n\t\tInput the product name: ";
+		delete_cache();
+		getline(cin, tmp.mProduct);
+		cout << "\t\tProduct name: " << tmp.mProduct << endl;
 
 		// quantity of product
-		cout << "\nInput the quantity of product(numeric): ";
+		cout << "\n\t\tInput the quantity of product(numeric): ";
 		cin >> tmp.mQuantity;
 		while(!cin || tmp.mQuantity < 0){
 			cout << "ERROR. Please input number." ;
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			delete_cache();
 			cin >> tmp.mQuantity;
 		}
-		cout << "Quantity of product: " << tmp.mQuantity << endl;
+		cout << "\t\tQuantity of product: " << tmp.mQuantity << endl;
 
 		// price of product
-		cout << "\nInput the price of product(numeric): ";
+		cout << "\n\t\tInput the price of product(numeric): ";
 		cin >> tmp.mPrice;
 		while(!cin || tmp.mPrice < 0){
 			cout << "ERROR.Please input number.";
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			delete_cache();
 			cin >> tmp.mPrice;
 		}
-		cout << "Price of product: " << tmp.mPrice << endl;
+		cout << "\t\tPrice of product: " << tmp.mPrice << endl;
 
 		vList -> push_back(tmp);
 	}
 }
 //output the list of customer in monitor
-void display_list_customer(TY_CustomerList *vList){
-	if(vList->empty()){
+void display_list_customer(TY_CustomerList vList){
+	if(vList.empty()){
 		cout << "NO RECORD\n";
 		return ;
 	}
-	cout << "NAME\t" << "TYPE\t" << "PRODUCT\t" << "QUANTITY\t" << "PRICE\t" << "MONEY\n";
+	cout << "NAME\t\t" << "TYPE\t" << "PRODUCT\t" << "QUANTITY\t" << "PRICE\t" << "MONEY\n";
 	cout <<"--------------------------------------------------------------------------";
-	FOR(tmp, vList->begin(), vList->end())
+	FOR(tmp, vList.begin(), vList.end())
 		print_info_customer(tmp);
 }
 void print_info_customer(TY_CustomerList :: iterator tmp){
-	cout << tmp -> mName << "\t" << tmp -> mCustype << "\t" << tmp -> mProduct << "\t" << tmp -> mQuantity << "\t" << tmp -> mPrice << "\t" << caculator(tmp);
+	cout << endl << tmp -> mName << "\t" << tmp -> mCustype << "\t" << tmp -> mProduct << "\t" << tmp -> mQuantity << "\t" << tmp -> mPrice << "\t" << caculator(tmp) << endl;
 }
 double get_discount(char *type_customer){
 	double discount;
@@ -128,6 +133,56 @@ double get_discount(char *type_customer){
 double caculator(TY_CustomerList :: iterator tmp){
 	return tmp -> mQuantity * tmp -> mPrice * get_discount(tmp -> mCustype);
 }
-int main(){
+bool compare(TY_Customer tmp1, TY_Customer tmp2){
+	return tmp1.mPrice > tmp2.mPrice;
+}
+void sort_list_customer(TY_CustomerList *vList){
+	sort(vList -> begin(), vList -> end(), compare);
+}
 
+void menu(void){
+	cout << "\n\tCUSTOMER MANAGEMENT\n";
+	cout << "\t-----------------------\n";
+	cout << "\t1. Input number of customer.\n";
+	cout << "\t2. Input infomation of customer.\n";
+	cout << "\t3. Sort the customer(due to Price).\n";
+	cout << "\t4. Print the list of customer.\n";
+	cout << "\t5. Exit.\n";
+	cout << "\n\t\tYour select: ";
+}
+int main(){
+	TY_CustomerList vList;
+	static __int16 numberCustomer, select;
+	while(1){
+		menu();
+		cin >> select;
+		if(!cin || select < 0){
+			delete_cache();
+			cin >> select;
+		}
+
+		switch(select){
+
+			case 1:
+				numberCustomer = input_number_customer();
+				break;
+			case 2:
+				input_info_customer(&vList, numberCustomer);
+				break;
+			case 3:
+				sort_list_customer(&vList);
+				break;
+			case 4:
+				display_list_customer(vList);
+				break;
+			case 5:
+				vList.clear();
+				exit(1);
+				break;
+
+			default:
+				break;
+		}
+	}
+	return 0;
 }
